@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residence 04 — Studio Bhopal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEAE2;
+    --paper-alt:#F6F4EE;
+    --ink:#1C1B18;
+    --concrete:#8F897C;
+    --line:#CFC9BC;
+    --blueprint:#2B4C6F;
+    --blueprint-soft:#B9C7D4;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:'Archivo', sans-serif; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--blueprint); color:var(--paper-alt); }
+  h1,h2,h3,.serif{ font-family:'Fraunces', serif; font-weight:400; letter-spacing:-0.01em; }
+  .container{ max-width:1180px; margin:0 auto; padding:0 40px; }
+  @media(max-width:640px){ .container{ padding:0 22px; } }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+  .rule{ border-top:1px solid var(--line); }
+  .pad{ padding:110px 0; }
+  @media(max-width:720px){ .pad{ padding:74px 0; } }
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in{ opacity:1; transform:none; }
+
+  /* ---------- NAV ---------- */
+  header{ position:fixed; top:0; left:0; right:0; z-index:100; padding:26px 0; mix-blend-mode:difference; }
+  header .container{ display:flex; justify-content:space-between; align-items:center; }
+  .wordmark{ font-family:'Fraunces', serif; font-size:19px; color:var(--paper); }
+  .back-link{ font-size:13px; color:var(--paper); display:flex; align-items:center; gap:8px; }
+  .back-link .bar{ width:14px; height:1px; background:currentColor; position:relative; }
+  .back-link .bar::before{ content:''; position:absolute; left:0; top:-2.5px; width:6px; height:6px; border-left:1px solid currentColor; border-bottom:1px solid currentColor; transform:rotate(45deg); }
+
+  /* ---------- HERO ---------- */
+  .p-hero{ position:relative; height:100vh; min-height:640px; display:flex; align-items:flex-end; overflow:hidden; }
+  .p-hero-img{ position:absolute; inset:0; will-change:transform; }
+  .p-hero-img svg{ width:100%; height:100%; }
+  .p-hero-scrim{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(28,27,24,0) 40%, rgba(28,27,24,0.55) 100%); }
+  .p-hero-copy{ position:relative; z-index:2; padding-bottom:8vh; width:100%; color:var(--paper-alt); }
+  .p-hero-copy .meta-row{ display:flex; gap:18px; font-size:12.5px; letter-spacing:0.02em; margin-bottom:16px; color:var(--blueprint-soft); }
+  .p-hero-copy h1{ font-size:clamp(40px,7.5vw,92px); line-height:0.98; }
+
+  /* ---------- INTRO ---------- */
+  .intro-grid{ display:grid; grid-template-columns:0.9fr 1.6fr; gap:60px; }
+  @media(max-width:820px){ .intro-grid{ grid-template-columns:1fr; gap:32px; } }
+  .intro-grid .annot{ font-family:'Fraunces', serif; font-style:italic; font-size:13px; color:var(--blueprint); }
+  .intro-grid p{ font-family:'Fraunces', serif; font-size:clamp(22px,2.6vw,32px); line-height:1.42; max-width:640px; }
+  .intro-grid .sub{ margin-top:22px; font-family:'Archivo',sans-serif; font-size:14.5px; color:var(--concrete); line-height:1.7; max-width:560px; }
+
+  /* ---------- DETAILS STRIP ---------- */
+  .details-strip{ display:grid; grid-template-columns:repeat(5,1fr); }
+  @media(max-width:820px){ .details-strip{ grid-template-columns:repeat(2,1fr); } }
+  .detail-cell{ border-left:1px solid var(--line); padding:0 22px; }
+  .detail-cell:first-child{ border-left:none; padding-left:0; }
+  @media(max-width:820px){ .detail-cell{ border-left:none; padding:18px 0; border-top:1px solid var(--line); } .detail-cell:nth-child(odd){ padding-right:22px; } .detail-cell:first-child, .detail-cell:nth-child(2){ border-top:none; } }
+  .detail-cell .label{ font-size:11px; color:var(--concrete); margin-bottom:10px; }
+  .detail-cell .val{ font-family:'Fraunces', serif; font-size:19px; }
+
+  /* ---------- BLUEPRINT VIEWER ---------- */
+  .bp-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:44px; flex-wrap:wrap; }
+  .bp-head h2{ font-size:clamp(28px,3.4vw,38px); }
+  .bp-head p{ max-width:320px; color:var(--concrete); font-size:14px; line-height:1.6; }
+  .bp-stage{ position:relative; width:100%; aspect-ratio:16/9; background:var(--blueprint); border:1px solid var(--line); overflow:hidden; }
+  .bp-layer{ position:absolute; inset:0; opacity:0; transition:opacity .5s ease; }
+  .bp-layer.active{ opacity:1; }
+  .bp-layer svg{ width:100%; height:100%; }
+  .bp-controls{ display:flex; border:1px solid var(--line); border-top:none; }
+  .bp-controls button{ flex:1; background:none; border:none; border-right:1px solid var(--line); padding:16px 10px; font-size:12.5px; color:var(--concrete); transition:color .3s, background .3s; }
+  .bp-controls button:last-child{ border-right:none; }
+  .bp-controls button.active{ color:var(--ink); background:var(--paper-alt); }
+  .bp-controls button:hover{ color:var(--ink); }
+
+  /* ---------- BLUEPRINT TO REALITY SCROLL STORY ---------- */
+  .story{ position:relative; }
+  .story-stage{ position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .story-frame{ width:min(920px, 84vw); aspect-ratio:16/9; position:relative; border:1px solid var(--line); }
+  .story-frame svg{ position:absolute; inset:0; width:100%; height:100%; opacity:0; transition:opacity .5s ease; }
+  .story-frame svg.active{ opacity:1; }
+  .story-label{ position:absolute; bottom:-40px; left:0; font-size:12.5px; color:var(--concrete); display:flex; gap:10px; align-items:center; }
+  .story-label .dot{ width:6px; height:6px; border-radius:50%; background:var(--blueprint); }
+  .story-track{ height:400vh; }
+  .story-progress{ position:absolute; right:40px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:16px; }
+  .story-progress .tick{ width:6px; height:6px; border-radius:50%; border:1px solid var(--concrete); transition:background .3s, border-color .3s; }
+  .story-progress .tick.active{ background:var(--blueprint); border-color:var(--blueprint); }
+  @media(max-width:720px){ .story-progress{ display:none; } }
+
+  /* ---------- GALLERY ---------- */
+  .gal-head h2{ font-size:clamp(28px,3.4vw,38px); margin-bottom:44px; }
+  .gallery{ display:grid; grid-template-columns:repeat(6,1fr); gap:14px; }
+  .g-item{ overflow:hidden; background:var(--paper-alt); border:1px solid var(--line); }
+  .g-item svg{ width:100%; height:100%; display:block; transition:transform .7s cubic-bezier(.2,.8,.2,1); }
+  .g-item:hover svg{ transform:scale(1.04); }
+  .g1{ grid-column:span 4; aspect-ratio:16/10; }
+  .g2{ grid-column:span 2; aspect-ratio:4/5; }
+  .g3{ grid-column:span 2; aspect-ratio:4/5; }
+  .g4{ grid-column:span 4; aspect-ratio:16/9; }
+  @media(max-width:820px){ .gallery{ grid-template-columns:1fr; } .g-item{ grid-column:span 1 !important; } }
+
+  /* ---------- PROCESS NOTE ---------- */
+  .process-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); }
+  @media(max-width:820px){ .process-grid{ grid-template-columns:1fr; } }
+  .process-card{ background:var(--paper); padding:34px 30px; }
+  .process-card .no{ font-size:11px; color:var(--blueprint); margin-bottom:16px; }
+  .process-card h3{ font-family:'Fraunces', serif; font-size:20px; margin-bottom:12px; }
+  .process-card p{ font-size:13.5px; color:var(--concrete); line-height:1.7; }
+
+  /* ---------- NEXT PROJECT ---------- */
+  .next-project{ position:relative; height:70vh; min-height:440px; display:flex; align-items:flex-end; overflow:hidden; }
+  .next-img{ position:absolute; inset:0; }
+  .next-img svg{ width:100%; height:100%; transition:transform .8s cubic-bezier(.2,.8,.2,1); }
+  .next-project:hover .next-img svg{ transform:scale(1.03); }
+  .next-scrim{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(28,27,24,0) 35%, rgba(28,27,24,0.6) 100%); }
+  .next-copy{ position:relative; z-index:2; padding:0 0 60px; width:100%; color:var(--paper-alt); }
+  .next-copy .label{ font-size:12px; letter-spacing:0.03em; color:var(--blueprint-soft); margin-bottom:14px; }
+  .next-copy h2{ font-size:clamp(32px,6vw,64px); display:flex; align-items:center; gap:20px; }
+  .next-copy h2 .arrow{ width:34px; height:1px; background:currentColor; position:relative; top:-4px; }
+  .next-copy h2 .arrow::after{ content:''; position:absolute; right:0; top:-3.5px; width:8px; height:8px; border-top:1px solid currentColor; border-right:1px solid currentColor; transform:rotate(45deg); }
+
+  /* ---------- FOOTER ---------- */
+  footer{ padding:60px 0 40px; }
+  .footer-bottom{ display:flex; justify-content:space-between; font-size:12px; color:var(--concrete); flex-wrap:wrap; gap:10px; }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a href="#" class="wordmark">Studio&nbsp;Bhopal</a>
+      <a href="#" class="back-link"><span class="bar"></span>All projects</a>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="p-hero" id="parallaxHero">
+    <div class="p-hero-img" id="parallaxImg">
+      <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice">
+        <rect width="1200" height="700" fill="#DCD6C8"/>
+        <rect x="0" y="470" width="1200" height="230" fill="#C7C1B4"/>
+        <polyline points="230,470 230,220 470,220 470,470" fill="#EFEBE0" stroke="#1C1B18" stroke-width="1"/>
+        <rect x="270" y="290" width="60" height="90" fill="#7C93A6"/>
+        <rect x="360" y="290" width="60" height="90" fill="#7C93A6"/>
+        <line x1="230" y1="380" x2="470" y2="380" stroke="#1C1B18" stroke-width="1"/>
+        <rect x="520" y="340" width="380" height="130" fill="#E4DFD1"/>
+        <line x1="520" y1="400" x2="900" y2="400" stroke="#1C1B18" stroke-width="0.8" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="p-hero-scrim"></div>
+    <div class="container p-hero-copy">
+      <div class="meta-row"><span>RESIDENTIAL</span><span>—</span><span>KOLAR, BHOPAL</span><span>—</span><span>2026</span></div>
+      <h1>Residence 04</h1>
+    </div>
+  </section>
+
+  <!-- ================= INTRO ================= -->
+  <section class="rule">
+    <div class="container pad intro-grid">
+      <div class="reveal">
+        <div class="annot">The brief</div>
+      </div>
+      <div class="reveal">
+        <p>A steeply sloped half-acre plot ruled out a conventional single-level layout — the house had to step down with the land, not fight it.</p>
+        <p class="sub">The clients wanted three generations under one roof without shared walls between them. The response splits the program across three stepped volumes connected by a covered walkway, each with its own entrance, light, and outlook — private when needed, together when it matters.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DETAILS STRIP ================= -->
+  <section class="rule">
+    <div class="container pad" style="padding-top:56px; padding-bottom:56px;">
+      <div class="details-strip reveal">
+        <div class="detail-cell"><div class="label">Type</div><div class="val">Residential</div></div>
+        <div class="detail-cell"><div class="label">Location</div><div class="val">Kolar, Bhopal</div></div>
+        <div class="detail-cell"><div class="label">Year</div><div class="val">2026</div></div>
+        <div class="detail-cell"><div class="label">Scope</div><div class="val">Architecture + Interior</div></div>
+        <div class="detail-cell"><div class="label">Area</div><div class="val">4,200 sq ft</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BLUEPRINT VIEWER ================= -->
+  <section class="rule">
+    <div class="container pad">
+      <div class="bp-head reveal">
+        <h2>Drawings</h2>
+        <p>Switch between levels and the section to see how the house steps down the slope.</p>
+      </div>
+      <div class="bp-stage reveal" id="bpStage">
+        <div class="bp-layer active" data-layer="ground">
+          <svg viewBox="0 0 800 450"><rect width="800" height="450" fill="#2B4C6F"/>
+            <g fill="none" stroke="#DCE6EE" stroke-width="1">
+              <rect x="120" y="120" width="220" height="200"/>
+              <rect x="380" y="180" width="260" height="180"/>
+              <line x1="230" y1="120" x2="230" y2="320"/>
+              <line x1="120" y1="220" x2="340" y2="220"/>
+              <line x1="510" y1="180" x2="510" y2="360"/>
+              <circle cx="360" cy="260" r="16"/>
+              <text x="130" y="400" fill="#DCE6EE" font-size="12" font-family="Archivo, sans-serif">GROUND FLOOR — 1:100</text>
+            </g>
+          </svg>
+        </div>
+        <div class="bp-layer" data-layer="first">
+          <svg viewBox="0 0 800 450"><rect width="800" height="450" fill="#2B4C6F"/>
+            <g fill="none" stroke="#DCE6EE" stroke-width="1">
+              <rect x="160" y="140" width="180" height="170"/>
+              <rect x="420" y="140" width="200" height="170"/>
+              <line x1="250" y1="140" x2="250" y2="310"/>
+              <line x1="520" y1="140" x2="520" y2="310"/>
+              <text x="170" y="390" fill="#DCE6EE" font-size="12" font-family="Archivo, sans-serif">FIRST FLOOR — 1:100</text>
+            </g>
+          </svg>
+        </div>
+        <div class="bp-layer" data-layer="section">
+          <svg viewBox="0 0 800 450"><rect width="800" height="450" fill="#2B4C6F"/>
+            <g fill="none" stroke="#DCE6EE" stroke-width="1">
+              <line x1="80" y1="380" x2="720" y2="380"/>
+              <line x1="80" y1="380" x2="80" y2="240"/>
+              <line x1="80" y1="240" x2="280" y2="240"/>
+              <line x1="280" y1="240" x2="280" y2="150"/>
+              <line x1="280" y1="150" x2="480" y2="150"/>
+              <line x1="480" y1="150" x2="480" y2="380"/>
+              <text x="90" y="410" fill="#DCE6EE" font-size="12" font-family="Archivo, sans-serif">SECTION A—A — 1:100</text>
+            </g>
+          </svg>
+        </div>
+        <div class="bp-layer" data-layer="elevation">
+          <svg viewBox="0 0 800 450"><rect width="800" height="450" fill="#2B4C6F"/>
+            <g fill="none" stroke="#DCE6EE" stroke-width="1">
+              <line x1="60" y1="380" x2="740" y2="380"/>
+              <rect x="120" y="220" width="180" height="160"/>
+              <rect x="340" y="150" width="220" height="230"/>
+              <rect x="600" y="260" width="120" height="120"/>
+              <line x1="150" y1="220" x2="150" y2="380"/>
+              <line x1="380" y1="150" x2="380" y2="380"/>
+              <text x="70" y="410" fill="#DCE6EE" font-size="12" font-family="Archivo, sans-serif">NORTH ELEVATION — 1:100</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="bp-controls reveal">
+        <button class="active" data-layer="ground">Ground floor</button>
+        <button data-layer="first">First floor</button>
+        <button data-layer="section">Section</button>
+        <button data-layer="elevation">Elevation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BLUEPRINT TO REALITY SCROLL STORY ================= -->
+  <section class="rule story" id="story">
+    <div class="container" style="padding-top:110px;">
+      <div class="reveal" style="margin-bottom:0;">
+        <h2 style="font-size:clamp(28px,3.4vw,38px);">From drawing to building</h2>
+        <p style="max-width:420px; color:var(--concrete); font-size:14px; margin-top:14px; line-height:1.6;">Keep scrolling — the same frame carries the project from concept to completion.</p>
+      </div>
+    </div>
+    <div class="story-track">
+      <div class="story-stage">
+        <div class="story-frame" id="storyFrame">
+          <svg class="active" data-step="0" viewBox="0 0 800 450"><rect width="800" height="450" fill="#F6F4EE"/>
+            <g fill="none" stroke="#1C1B18" stroke-width="1" stroke-dasharray="2 3">
+              <path d="M200 350 L200 200 L340 150 L480 200 L480 350"/>
+              <line x1="150" y1="350" x2="550" y2="350"/>
+            </g>
+          </svg>
+          <svg data-step="1" viewBox="0 0 800 450"><rect width="800" height="450" fill="#2B4C6F"/>
+            <g fill="none" stroke="#DCE6EE" stroke-width="1">
+              <rect x="200" y="180" width="280" height="170"/>
+              <line x1="340" y1="180" x2="340" y2="350"/>
+              <line x1="200" y1="260" x2="480" y2="260"/>
+            </g>
+          </svg>
+          <svg data-step="2" viewBox="0 0 800 450"><rect width="800" height="450" fill="#D8D2C4"/>
+            <rect x="200" y="180" width="280" height="170" fill="none" stroke="#1C1B18" stroke-width="1.4"/>
+            <line x1="200" y1="180" x2="200" y2="60" stroke="#1C1B18" stroke-width="1.4"/>
+            <line x1="480" y1="180" x2="480" y2="60" stroke="#1C1B18" stroke-width="1.4"/>
+            <line x1="200" y1="60" x2="480" y2="60" stroke="#1C1B18" stroke-width="1.4" stroke-dasharray="4 4"/>
+          </svg>
+          <svg data-step="3" viewBox="0 0 800 450"><rect width="800" height="450" fill="#E4DFD1"/>
+            <rect x="200" y="150" width="280" height="200" fill="#EFEBE0" stroke="#1C1B18" stroke-width="1.2"/>
+            <rect x="230" y="220" width="50" height="80" fill="#7C93A6"/>
+            <rect x="300" y="220" width="50" height="80" fill="#7C93A6"/>
+            <rect x="400" y="220" width="50" height="80" fill="#7C93A6"/>
+          </svg>
+          <svg data-step="4" viewBox="0 0 800 450"><rect width="800" height="450" fill="#DCD6C8"/>
+            <rect x="0" y="330" width="800" height="120" fill="#C7C1B4"/>
+            <rect x="190" y="130" width="300" height="220" fill="#F1EDE1" stroke="#1C1B18" stroke-width="1"/>
+            <rect x="220" y="200" width="55" height="90" fill="#7C93A6"/>
+            <rect x="300" y="200" width="55" height="90" fill="#7C93A6"/>
+            <rect x="400" y="200" width="55" height="90" fill="#7C93A6"/>
+            <line x1="190" y1="330" x2="490" y2="330" stroke="#1C1B18" stroke-width="0.8"/>
+          </svg>
+          <div class="story-label"><span class="dot"></span><span id="storyLabel">Concept sketch</span></div>
+        </div>
+        <div class="story-progress" id="storyProgress">
+          <div class="tick active"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROCESS NOTES ================= -->
+  <section class="rule">
+    <div class="container" style="padding-top:0;">
+      <div class="process-grid reveal">
+        <div class="process-card">
+          <div class="no">Approach</div>
+          <h3>Working with the slope</h3>
+          <p>Rather than cutting and filling to flatten the plot, the three volumes step down at three different levels, cutting excavation by roughly a third.</p>
+        </div>
+        <div class="process-card">
+          <div class="no">Approach</div>
+          <h3>Local stone, re-read</h3>
+          <p>Coursed sandstone from a quarry 40km away is used on the plinth and party walls, left unpolished so it weathers the way the surrounding hillside does.</p>
+        </div>
+        <div class="process-card">
+          <div class="no">Approach</div>
+          <h3>One shared spine</h3>
+          <p>A covered walkway ties the three households together without ever forcing them through each other's spaces — the one deliberate compromise on privacy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL GALLERY ================= -->
+  <section class="rule">
+    <div class="container pad">
+      <div class="gal-head reveal"><h2>The finished house</h2></div>
+      <div class="gallery reveal">
+        <div class="g-item g1"><svg viewBox="0 0 640 400"><rect width="640" height="400" fill="#E4DFD1"/><rect x="80" y="120" width="480" height="220" fill="#F1EDE1" stroke="#1C1B18" stroke-width="1"/><rect x="120" y="180" width="60" height="100" fill="#7C93A6"/><rect x="210" y="180" width="60" height="100" fill="#7C93A6"/></svg></div>
+        <div class="g-item g2"><svg viewBox="0 0 320 400"><rect width="320" height="400" fill="#DCD6C8"/><rect x="60" y="80" width="200" height="260" fill="#F1EDE1" stroke="#1C1B18" stroke-width="1"/></svg></div>
+        <div class="g-item g3"><svg viewBox="0 0 320 400"><rect width="320" height="400" fill="#EFEBE0"/><circle cx="160" cy="180" r="70" fill="#B9C7D4"/></svg></div>
+        <div class="g-item g4"><svg viewBox="0 0 640 360"><rect width="640" height="360" fill="#F6F4EE"/><rect x="100" y="90" width="440" height="200" fill="#E4DFD1" stroke="#1C1B18" stroke-width="1"/><line x1="320" y1="90" x2="320" y2="290" stroke="#1C1B18" stroke-width="0.8"/></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NEXT PROJECT ================= -->
+  <a href="#" class="next-project">
+    <div class="next-img">
+      <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"><rect width="1200" height="700" fill="#EDEAE2"/>
+        <rect x="260" y="200" width="680" height="360" fill="#F6F4EE" stroke="#1C1B18" stroke-width="1"/>
+        <line x1="260" y1="320" x2="940" y2="320" stroke="#1C1B18"/>
+        <line x1="260" y1="440" x2="940" y2="440" stroke="#1C1B18"/>
+        <line x1="600" y1="200" x2="600" y2="560" stroke="#1C1B18"/>
+      </svg>
+    </div>
+    <div class="next-scrim"></div>
+    <div class="container next-copy">
+      <div class="label">NEXT PROJECT — COMMERCIAL</div>
+      <h2>Vertex Commercial<span class="arrow"></span></h2>
+    </div>
+  </a>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="rule">
+    <div class="container">
+      <div class="footer-bottom">
+        <span>© 2026 Studio Bhopal</span>
+        <span>Bhopal, Madhya Pradesh</span>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  // Blueprint viewer controls
+  const bpButtons = document.querySelectorAll('.bp-controls button');
+  const bpLayers = document.querySelectorAll('.bp-layer');
+  bpButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      bpButtons.forEach(b=>b.classList.remove('active'));
+      bpLayers.forEach(l=>l.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector('.bp-layer[data-layer="'+btn.dataset.layer+'"]').classList.add('active');
+    });
+  });
+
+  // Scroll reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:0.15 });
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Hero parallax
+  const heroImg = document.getElementById('parallaxImg');
+  const heroSection = document.getElementById('parallaxHero');
+  window.addEventListener('scroll', ()=>{
+    const r = heroSection.getBoundingClientRect();
+    if(r.bottom > 0){
+      const y = Math.max(0, -r.top) * 0.25;
+      heroImg.style.transform = 'translateY(' + y + 'px) scale(1.06)';
+    }
+  }, { passive:true });
+
+  // Blueprint-to-reality scroll story
+  const storyTrack = document.querySelector('.story-track');
+  const storySvgs = document.querySelectorAll('#storyFrame svg');
+  const storyTicks = document.querySelectorAll('#storyProgress .tick');
+  const storyLabel = document.getElementById('storyLabel');
+  const labels = ['Concept sketch', 'Blueprint', 'Foundations', 'Structure rises', 'Finished house'];
+
+  function updateStory(){
+    const rect = storyTrack.getBoundingClientRect();
+    const total = rect.height - window.innerHeight;
+    const progress = Math.min(1, Math.max(0, -rect.top / total));
+    const step = Math.min(storySvgs.length - 1, Math.floor(progress * storySvgs.length));
+    storySvgs.forEach(s=>s.classList.remove('active'));
+    storyTicks.forEach(t=>t.classList.remove('active'));
+    document.querySelector('#storyFrame svg[data-step="'+step+'"]').classList.add('active');
+    storyTicks[step].classList.add('active');
+    storyLabel.textContent = labels[step];
+  }
+  window.addEventListener('scroll', updateStory, { passive:true });
+  updateStory();
+</script>
+</body>
+</html>
