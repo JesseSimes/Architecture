@@ -1,0 +1,38 @@
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 26px 0;
+  mix-blend-mode: difference;
+}
+
+.site-nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-nav .wordmark {
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--paper);
+}
+
+.site-nav nav ul {
+  display: flex;
+  gap: 34px;
+  list-style: none;
+}
+
+.site-nav nav a {
+  font-size: 13px;
+  color: var(--paper);
+}
+
+@media (max-width: 720px) {
+  .site-nav nav ul {
+    display: none;
+  }
+}
